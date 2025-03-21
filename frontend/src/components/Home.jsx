@@ -14,7 +14,7 @@ function Home() {
     axios
       .get("http://localhost:3000/top-stories")
       .then((res) => {
-        console.log("Top Stories:", res.data);
+        // console.log("Top Stories:", res.data);
         setTopStoriesData(res.data);
       })
       .catch((error) => {
@@ -26,7 +26,7 @@ function Home() {
     if (!searchTerm) {
       return;
     }
-    axios.get("http://localhost:3000/search?q=" + searchTerm)
+    axios.get("http://localhost:3000/search?q=" + newsSearch)
       .then((res) => {
         console.log(res.data);
         setData(res.data)
@@ -38,7 +38,7 @@ function Home() {
 
     axios.get("http://localhost:3000/top-stories")
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setTopStoriesData(res.data);
       })
       .catch((error) => {
@@ -124,7 +124,7 @@ function Home() {
                 </div>
               ))
             ) : (
-              <p className="text-gray-500 mt-2">No results found.</p>
+              <p className="text-gray-500 mt-2">Loading...</p>
             )}
           </>
         ) : (

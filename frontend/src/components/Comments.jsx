@@ -114,12 +114,12 @@ function Comments() {
                                     />
                                 </div>
                                 <div className="user-meta w-full">
-                                    <div className="name text-sm font-semibold uppercase">Pritam</div>
+                                    <div className="name text-sm font-semibold uppercase">anonymous123</div>
                                     <div className="text-xs text-gray-500">5 mins ago</div>
                                 </div>
                             </div>
                             <p className="pl-12 w-full">
-                            This is shocking! I hope authorities take action soon.
+                            If this actually happens, it’s going to be a disaster for personal freedom. Giving AI and the government full control over our money means they can decide what we can or can’t buy. What about people in rural areas who rely on cash? What if the system glitches or unfairly blocks transactions? This is less about economic stability and more about total financial surveillance. We should have the right to choose how we handle our own money!
                             </p>
                         </li>
 
@@ -135,12 +135,12 @@ function Comments() {
                                 </div>
                                 <div className="user-meta">
                                     <div className="name text-sm font-semibold uppercase">
-                                        Rohan
+                                        Axyon078
                                     </div>
                                     <div className="text-xs text-gray-500">23 mins ago</div>
                                 </div>
                             </div>
-                            <p className="pl-12">Thank you for covering this. More people need to be aware.</p>
+                            <p className="pl-12">This could actually be a step toward a more transparent and efficient economy. Eliminating black money, tax evasion, and corruption would be a huge win. With AI monitoring transactions, financial crimes could be reduced significantly. Plus, digital currency would make payments faster and more convenient. As long as there are proper safeguards in place to protect privacy, this system could benefit society in the long run.</p>
                         </li>
                     </ul>
                 </div>

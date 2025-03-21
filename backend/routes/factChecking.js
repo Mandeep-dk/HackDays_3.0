@@ -1,11 +1,13 @@
 import express from "express";
 import UploadedNews from './../config/models/News.js';
+import dotenv from "dotenv";
 
 const router = express.Router();
+dotenv.config();
 
 async function checkNewsCredibility(title, content) {
     const { GoogleGenerativeAI } = await import("@google/generative-ai");
-    const genAI = new GoogleGenerativeAI("AIzaSyDrCEBD_V8_pIsiWn1jHoqq5S7163-kJQA");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are an AI that verifies news credibility.
