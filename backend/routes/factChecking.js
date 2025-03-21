@@ -1,5 +1,5 @@
 import express from "express";
-import UploadedNews from './../config/models/News.js'; 
+import UploadedNews from './../config/models/News.js';
 
 const router = express.Router();
 
@@ -8,17 +8,31 @@ async function checkNewsCredibility(title, content) {
     const genAI = new GoogleGenerativeAI("AIzaSyDrCEBD_V8_pIsiWn1jHoqq5S7163-kJQA");
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = `You are an AI that verifies news credibility. 
-    Analyze the following news and determine if it is true or false. 
-    If you suspect it is fake or misleading, explain why. Otherwise, confirm its credibility. 
-    Here is the news:
-    - Title: "${title}"
-    - Content: "${content}"
-    
-    Your response should include:
-    1. A credibility score (0-100).
-    2. A short reason if the news is false.
-    3. A verdict: True or False.`;
+    const prompt = `You are an AI that verifies news credibility.
+Analyze the following news and determine if it is true or false.
+
+When assessing credibility, consider:
+
+The possibility that news from remote areas or investigative reports may have limited sources.
+Logical consistency, historical patterns, and corroborative evidence rather than outright dismissal due to lack of widespread reporting.
+The presence of supporting claims, official statements, and expert opinions.
+If the content is logically structured and meaningful, it should not be dismissed simply due to lack of mainstream coverage.
+The news should be marked as false only if:
+
+The content is gibberish (random characters, meaningless words, or nonsensical structure).
+The news completely lacks logical sense (contradicts fundamental facts, has no coherent narrative, or is impossible to interpret).
+The verdict should be only True or False based on the available information.
+
+Here is the news:
+
+Title: "${title}"
+Content: "${content}"
+
+Your response should include:
+
+A credibility score (0-100) based on available evidence and context.
+A short reason if the news is marked false (only in cases of gibberish or illogical content).
+A verdict: True or False.`;
 
     try {
         const result = await model.generateContent(prompt);
@@ -31,23 +45,23 @@ async function checkNewsCredibility(title, content) {
 }
 
 router.post('/upload-news', async (req, res) => {
-    const { title, content } = req.body;
-    
+    const { title, content, verdict } = req.body;
+
     if (!title || !content) {
         return res.status(400).json({ error: "Title and content are required." });
     }
 
     try {
         // Check credibility before saving (assuming checkNewsCredibility is an async function)
-        const credibilityResult = await checkNewsCredibility(title, content);
+        const credibilityResult = await checkNewsCredibility(title, content, verdict);
 
-        const uploadedNews = new UploadedNews({ title, content });
+        const uploadedNews = new UploadedNews({ title, content, verdict });
         await uploadedNews.save();
 
         // Responding correctly with a single JSON response
-        res.status(201).json({ 
-            message: "News uploaded successfully to the db!", 
-            credibilityCheck: credibilityResult 
+        res.status(201).json({
+            message: "News uploaded successfully!",
+            credibilityCheck: credibilityResult
         });
 
     } catch (error) {

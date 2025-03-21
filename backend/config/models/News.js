@@ -11,6 +11,10 @@ const newsSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  verdict: {
+    type: String,
+    required: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -8,7 +8,7 @@ function App() {
   return (
     <Router> 
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/upload-news" element={<UploadNews />} />
         <Route path="/community-news" element={<CommunityNews />} />
         <Route path="/news/:id" element={<NewsDetail />} /> 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { FaSearch } from "react-icons/fa"; 
 
 function Home() {
   const [newsSearch, setNewsSearch] = useState("");
@@ -23,57 +24,64 @@ function Home() {
 
   useEffect(() => {
     if (!searchTerm) {
-        return;
+      return;
     }
     axios.get("http://localhost:3000/search?q=" + searchTerm)
-        .then((res) => {
-            console.log(res.data);
-            setData(res.data)
+      .then((res) => {
+        console.log(res.data);
+        setData(res.data)
 
-        })
-        .catch(error => {
-            console.error('Error fetching news:', error);
-        });
+      })
+      .catch(error => {
+        console.error('Error fetching news:', error);
+      });
 
     axios.get("http://localhost:3000/top-stories")
-        .then((res) => {
-            console.log(res.data);
-            setTopStoriesData(res.data);
-        })
-        .catch((error) => {
-            console.error("Error fetching news:", error);
-        });
-}, [searchTerm])
+      .then((res) => {
+        console.log(res.data);
+        setTopStoriesData(res.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching news:", error);
+      });
+  }, [searchTerm])
 
   return (
     <>
       {/* Header */}
-      <header className="flex justify-between items-center w-full max-w-6xl mx-auto py-4 px-6 bg-black">
-        <h1 className="text-3xl font-bold text-white">Positive News</h1>
-       
-        <Link to="/community-news">
-            <button className="text-white hover cursor-pointer ml-[100vh]">Community News</button>
-        </Link>
-        <Link to="/upload-news">
-            <button className="text-white hover cursor-pointer">Upload News</button>
-        </Link>
-      </header>
+     <header className="flex justify-between items-center w-full max-w-6xl mx-auto py-4 px-6">
+  <h1 className="text-3xl font-bold ml-[-20px]">InfoSprint</h1>
+
+  <div className="flex gap-4">
+    <Link to="/community-news">
+      <button className="text-white cursor-pointer bg-blue-600 p-2 w-[150px] h-[40px] rounded-lg">
+        Community News
+      </button>
+    </Link>
+    <Link to="/upload-news">
+      <button className="text-white cursor-pointer bg-red-600 p-2 w-[150px] h-[40px] rounded-lg">
+        Upload News
+      </button>
+    </Link>
+  </div>
+</header>
+
 
       {/* Search Bar */}
       <div className="flex justify-center w-full">
-        <div className="flex w-full max-w-6xl gap-2 p-2 border rounded-xl mt-7">
+        <div className="flex w-full max-w-6xl gap-2 p-2 border rounded-full mt-7">
           <input
             type="text"
             placeholder="Search..."
             value={newsSearch}
             onChange={(e) => setNewsSearch(e.target.value)}
-            className="border border-gray-300 rounded-xl p-2 flex-1"
+            className="p-2 flex-1 outline-none border-none "
           />
           <button
-            className="border border-gray-300 rounded-xl px-4 py-2"
+            className=" px-4 py-2"
             onClick={() => setSearchTerm(newsSearch.trim())} // Remove extra spaces
           >
-            Search
+            <FaSearch size={18} />
           </button>
           {searchTerm && (
             <button

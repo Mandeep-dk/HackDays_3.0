@@ -6,48 +6,67 @@ const UploadNews = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [factCheckResult, setFactCheckResult] = useState(null);
+  const [verdictCheck, setVerdictCheck] = useState(null); 
   const [uploadStatus, setUploadStatus] = useState("");
 
-  const BASE_URL = "http://localhost:3000/news"; // Corrected base URL
+  const BASE_URL = "http://localhost:3000/news";
 
+  // Function to Fact-Check News
   const factCheckNews = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/fact-check`, { 
-        params: { title, content } // Use params for GET requests
+      const response = await axios.get(`${BASE_URL}/fact-check`, {
+        params: { title, content }
       });
-      console.log(response.data)
-      const credibilityCheckText = response.data.credibilityCheck;
 
+      console.log("Fact-Check Response:", response.data);
+
+      const credibilityCheckText = response.data.credibilityCheck || "";
+      
       // Extract reason and verdict using regex
-      const reasonMatch = credibilityCheckText.match(/2\.\s\*\*Reason.*?\*\*\s(.+?)\n\n3\./s);
-      const verdictMatch = credibilityCheckText.match(/3\.\s\*\*Verdict:\*\*\s(.+)/);
-      
+      const reasonMatch = credibilityCheckText.match(/Reason:\s(.+?)\n\nVerdict:/s);
+const verdictMatch = credibilityCheckText.match(/Verdict:\s(.+)/);
+
+
       // Extract text or provide default fallback
-      const reason = reasonMatch ? reasonMatch[1].trim() : "Reason not found";
-      const verdict = verdictMatch ? verdictMatch[1].trim() : "Verdict not found";
-      
-      console.log("Reason:", reason);
-      console.log("Verdict:", verdict);
-  
+      const reason = reasonMatch ? reasonMatch[1].trim() : "No clear reason provided.";
+      const verdict = verdictMatch ? verdictMatch[1].trim() : "Verdict not found.";
+
+      console.log("Extracted Reason:", reason);
+      console.log("Extracted Verdict:", verdict);
+
+      // Convert verdict to boolean (true/false)
+      const verdictBoolean = verdict.toLowerCase().includes("true");
+
+      setVerdictCheck(verdictBoolean); 
       setFactCheckResult({ reason, verdict });
     } catch (error) {
       console.error("Error checking news credibility:", error);
-      setFactCheckResult({ verdict: "Error verifying news." });
+      setFactCheckResult({ verdict: "Error verifying news.", reason: "Unable to fetch verification." });
     }
   };
 
-  // Handle News Submission
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  // Separate function to submit news
+  const submitNews = async () => {
+    if (verdictCheck === null) {
+      setUploadStatus("Please fact-check the news first.");
+      return;
+    }
 
     try {
-      const response = await axios.post(`${BASE_URL}/upload-news`, { title, content }, {
-        headers: { "Content-Type": "application/json" }, // Ensure correct headers
+      const response = await axios.post(`${BASE_URL}/upload-news`, {
+        title,
+        content,
+        verdict: verdictCheck
+      }, {
+        headers: { "Content-Type": "application/json" },
       });
-      console.log(response.data);
+
+      console.log("Upload Response:", response.data);
       setUploadStatus(response.data.message);
       setTitle("");
       setContent("");
+      setFactCheckResult(null);
+      setVerdictCheck(null);
     } catch (error) {
       console.error("Error uploading news:", error);
       setUploadStatus("Failed to upload news.");
@@ -55,48 +74,65 @@ const UploadNews = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold text-center mb-4">Upload News Anonymously</h2>
+    <div className="max-w-xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      {/* Header */}
+      <h2 className="text-2xl font-bold text-gray-900 text-center mb-5">Upload News</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Form */}
+      <form className="space-y-4">
+        {/* News Title */}
         <input
           type="text"
           placeholder="News Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
           required
         />
 
+        {/* News Content */}
         <textarea
           placeholder="Write your news here..."
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded h-32"
+          className="w-full p-3 border border-gray-300 rounded-lg h-36 focus:ring-2 focus:ring-blue-400 outline-none"
           required
         />
 
+        {/* Fact-Check Button */}
         <button
           type="button"
           onClick={factCheckNews}
-          className="w-full bg-blue-500 text-white py-2 rounded"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
         >
           Fact-Check News
         </button>
 
+        {/* Fact-Check Result */}
         {factCheckResult && (
-          <div className="p-2 bg-gray-100 rounded">
-            <p><strong>Verdict:</strong> {factCheckResult.verdict}</p>
-            <p><strong>Reason:</strong> {factCheckResult.reason}</p>
+          <div className="p-3 bg-gray-100 rounded-lg border border-gray-300 mt-2">
+            <p className="font-semibold">
+              <span className="text-gray-700">Verdict:</span> {factCheckResult.verdict}
+            </p>
+            <p className="text-gray-700">
+              <span className="font-semibold">Reason:</span> {factCheckResult.reason}
+            </p>
           </div>
         )}
 
-        <button type="submit" className="w-full bg-green-500 text-white py-2 rounded">
+        {/* Upload Button */}
+        <button
+          type="button"
+          onClick={submitNews} // Manually triggered
+          className="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+          disabled={verdictCheck === null} // Prevents uploading without fact-checking
+        >
           Upload News
         </button>
       </form>
 
-      {uploadStatus && <p className="text-center mt-4">{uploadStatus}</p>}
+      {/* Upload Status */}
+      {uploadStatus && <p className="text-center mt-4 text-gray-700">{uploadStatus}</p>}
     </div>
   );
 };
